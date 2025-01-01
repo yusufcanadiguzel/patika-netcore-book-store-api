@@ -50,4 +50,29 @@ public class BooksController : ControllerBase
 
     //     return book;
     // }
+
+    [HttpPost]
+    public IActionResult CreateOneBook([FromBody] Book addedBook){
+        if(_books.SingleOrDefault(b => b.Id == addedBook.Id) is not null)
+            return BadRequest();
+
+        _books.Add(addedBook);
+
+        return Ok();
+    }
+
+    [HttpPut("{id:int}")]
+    public IActionResult UpdateOneBook([FromRoute(Name = "id")] int id, [FromBody] Book updatedBook){
+        var bookEntity = _books.SingleOrDefault(b => b.Id == id);
+
+        if(bookEntity is null)
+            return BadRequest();
+
+        bookEntity.Title = (updatedBook.Title == default) ? bookEntity.Title : updatedBook.Title;
+        bookEntity.GenreId = (updatedBook.GenreId == default) ? bookEntity.GenreId : updatedBook.GenreId;
+        bookEntity.PageCount = (updatedBook.PageCount == default) ? bookEntity.PageCount : updatedBook.PageCount;
+        bookEntity.PublishDate = (updatedBook.PublishDate == default) ? bookEntity.PublishDate : updatedBook.PublishDate;
+
+        return Ok();
+    }
 }
