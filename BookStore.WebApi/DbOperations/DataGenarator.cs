@@ -3,19 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.WebApi;
 
-public class DataGenarator
+public static class DataGenarator
 {
-    public static void Initialize(IServiceProvider serviceProvider)
+    public static void Initialize(this BookStoreDbContext dbContext)
     {
-        using (var context = new BookStoreDbContext(serviceProvider.GetRequiredService<DbContextOptions<BookStoreDbContext>>()))
-        {
-            if (context.Books.Any())
+        if (dbContext.Books.Any())
                 return;
 
-            context.Books.AddRange(
+            dbContext.Books.AddRange(
                 new Book
                 {
-                    Id = 1,
                     Title = "1984",
                     GenreId = 1, // Bilim Kurgu
                     PageCount = 200,
@@ -23,7 +20,6 @@ public class DataGenarator
                 },
                 new Book
                 {
-                    Id = 2,
                     Title = "İlahi Komedya",
                     GenreId = 2, // Klasikler
                     PageCount = 300,
@@ -31,7 +27,6 @@ public class DataGenarator
                 },
                 new Book
                 {
-                    Id = 3,
                     Title = "Atomik Alışkanlıklar",
                     GenreId = 3, // Kişisel Gelişim
                     PageCount = 400,
@@ -39,7 +34,6 @@ public class DataGenarator
                 }
             );
 
-            context.SaveChanges();
-        }
+            dbContext.SaveChanges();
     }
 }

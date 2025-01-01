@@ -13,9 +13,16 @@ builder.Services.AddDbContext<BookStoreDbContext>(options => {
     options.UseInMemoryDatabase(databaseName: "BookStoreDb");
 });
 
-builder.Services.AddScoped<DataGenarator>();
+//builder.Services.AddScoped<DataGenarator>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<BookStoreDbContext>();
+    
+    context.Initialize();   
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

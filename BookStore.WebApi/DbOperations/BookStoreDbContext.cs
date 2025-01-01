@@ -12,10 +12,5 @@ public class BookStoreDbContext : DbContext
 
     public DbSet<Book> Books { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        
-    }
+    
 }

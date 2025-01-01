@@ -6,10 +6,17 @@ namespace BookStore.WebApi.Controllers;
 [Route("[controller]")]
 public class BooksController : ControllerBase
 {
+    private readonly BookStoreDbContext _context;
+
+    public BooksController(BookStoreDbContext context)
+    {
+        _context = context;
+    }
+
     [HttpGet]
     public List<Book> GetAllBooks()
     {
-        var books = _books.OrderBy(b => b.Id).ToList();
+        var books = _context.Books.OrderBy(b => b.Id).ToList();
 
         return books;
     }
@@ -17,7 +24,7 @@ public class BooksController : ControllerBase
     [HttpGet("{id:int}")]
     public Book GetOneBookById([FromRoute(Name = "id")] int id)
     {
-        var book = _books.Where(b => b.Id == id).SingleOrDefault();
+        var book = _context.Books.Where(b => b.Id == id).SingleOrDefault();
 
         return book;
     }
@@ -32,10 +39,12 @@ public class BooksController : ControllerBase
     [HttpPost]
     public IActionResult CreateOneBook([FromBody] Book addedBook)
     {
-        if (_books.SingleOrDefault(b => b.Id == addedBook.Id) is not null)
+        if (_context.Books.SingleOrDefault(b => b.Id == addedBook.Id) is not null)
             return BadRequest();
 
-        _books.Add(addedBook);
+        _context.Books.Add(addedBook);
+
+        _context.SaveChanges();
 
         return Ok();
     }
@@ -43,7 +52,7 @@ public class BooksController : ControllerBase
     [HttpPut("{id:int}")]
     public IActionResult UpdateOneBook([FromRoute(Name = "id")] int id, [FromBody] Book updatedBook)
     {
-        var bookEntity = _books.SingleOrDefault(b => b.Id == id);
+        var bookEntity = _context.Books.SingleOrDefault(b => b.Id == id);
 
         if (bookEntity is null)
             return BadRequest();
@@ -53,18 +62,22 @@ public class BooksController : ControllerBase
         bookEntity.PageCount = (updatedBook.PageCount == default) ? bookEntity.PageCount : updatedBook.PageCount;
         bookEntity.PublishDate = (updatedBook.PublishDate == default) ? bookEntity.PublishDate : updatedBook.PublishDate;
 
+        _context.SaveChanges();
+
         return Ok();
     }
 
     [HttpDelete("{id:int}")]
     public IActionResult DeleteOneBook([FromRoute(Name = "id")] int id)
     {
-        var bookEntity = _books.SingleOrDefault(b => b.Id == id);
+        var bookEntity = _context.Books.SingleOrDefault(b => b.Id == id);
 
         if (bookEntity is null)
             return BadRequest();
 
-        _books.Remove(bookEntity);
+        _context.Books.Remove(bookEntity);
+
+        _context.SaveChanges();
 
         return Ok();
     }
