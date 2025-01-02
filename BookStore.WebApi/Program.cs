@@ -1,4 +1,5 @@
 using BookStore.WebApi;
+using BookStore.WebApi.Common;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<BookStoreDbContext>(options => {
     options.UseInMemoryDatabase(databaseName: "BookStoreDb");
 });
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //builder.Services.AddScoped<DataGenarator>();
 

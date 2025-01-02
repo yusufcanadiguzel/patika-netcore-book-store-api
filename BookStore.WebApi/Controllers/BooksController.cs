@@ -1,4 +1,6 @@
+using AutoMapper;
 using BookStore.WebApi.BookOperations.CreateBook;
+using BookStore.WebApi.BookOperations.DeleteBook;
 using BookStore.WebApi.BookOperations.GetBookById;
 using BookStore.WebApi.BookOperations.GetBooks;
 using BookStore.WebApi.BookOperations.UpdateBook;
@@ -11,16 +13,18 @@ namespace BookStore.WebApi.Controllers;
 public class BooksController : ControllerBase
 {
     private readonly BookStoreDbContext _context;
+    private readonly IMapper _mapper;
 
-    public BooksController(BookStoreDbContext context)
+    public BooksController(BookStoreDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     [HttpGet]
     public IActionResult GetAllBooks()
     {
-        var getBooksQuery = new GetBooksQuery(_context);
+        var getBooksQuery = new GetBooksQuery(_context, _mapper);
 
         var books = getBooksQuery.Handle();
 
@@ -32,7 +36,7 @@ public class BooksController : ControllerBase
     {
         try
         {
-            var getBookByIdQuery = new GetBookByIdQuery(_context, id);
+            var getBookByIdQuery = new GetBookByIdQuery(_context, id, _mapper);
 
             var bookViewModel = getBookByIdQuery.Handle();
 
@@ -56,7 +60,7 @@ public class BooksController : ControllerBase
     {
         try
         {
-            var createBookCommand = new CreateBookCommand(_context);
+            var createBookCommand = new CreateBookCommand(_context, _mapper);
 
             createBookCommand.BookModel = addedBook;
 
@@ -92,15 +96,17 @@ public class BooksController : ControllerBase
     [HttpDelete("{id:int}")]
     public IActionResult DeleteOneBook([FromRoute(Name = "id")] int id)
     {
-        var bookEntity = _context.Books.SingleOrDefault(b => b.Id == id);
+        try
+        {
+            var deleteBookCommand = new DeleteBookCommand(_context, id);
 
-        if (bookEntity is null)
-            return BadRequest();
-
-        _context.Books.Remove(bookEntity);
-
-        _context.SaveChanges();
-
-        return Ok();
+            deleteBookCommand.Handle();
+            
+            return Ok();
+        }
+        catch (Exception exception)
+        {
+            return BadRequest(exception.Message);
+        }
     }
 }
