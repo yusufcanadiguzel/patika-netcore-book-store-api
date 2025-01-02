@@ -11,6 +11,4 @@ public class BookStoreDbContext : DbContext
     }
 
     public DbSet<Book> Books { get; set; }
-
-    
 }
