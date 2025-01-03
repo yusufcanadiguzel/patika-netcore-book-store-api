@@ -1,6 +1,7 @@
 using BookStore.WebApi;
 using BookStore.WebApi.Common;
 using BookStore.WebApi.Middlewares;
+using BookStore.WebApi.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.AddDbContext<BookStoreDbContext>(options => {
 });
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddSingleton<ILoggerService, ConsoleLogger>();
 
 //builder.Services.AddScoped<DataGenarator>();
 
