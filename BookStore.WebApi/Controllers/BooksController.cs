@@ -65,22 +65,15 @@ public class BooksController : ControllerBase
     {
         var createBookCommand = new CreateBookCommand(_context, _mapper);
 
-        try
-        {
-            createBookCommand.BookModel = addedBook;
+        createBookCommand.BookModel = addedBook;
 
-            var validator = new CreateBookValidator();
+        var validator = new CreateBookValidator();
 
-            validator.ValidateAndThrow(createBookCommand);
+        validator.ValidateAndThrow(createBookCommand);
 
-            createBookCommand.Handle();
+        createBookCommand.Handle();
 
-            return Ok();
-        }
-        catch (Exception exception)
-        {
-            return BadRequest(exception.Message);
-        }
+        return Ok();
     }
 
     [HttpPut("{id:int}")]
